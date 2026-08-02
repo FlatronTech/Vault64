@@ -12,6 +12,7 @@ Vault64 is a clean, lightweight, and modern desktop game launcher built with Rus
 
 - 🎨 **Modern Dark UI:** Sleek, minimal, and easy on the eyes.
 - ⚡ **Blazing Fast:** Written in Rust for maximum speed and minimal RAM/CPU usage.
+- 📦 **Not big downloads:** Every game before you download is *Very much* compressed.
 
 ## 📜 License
 
