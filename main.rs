@@ -40,7 +40,7 @@ Log "Exe:    $AppExe"
 
 $exeBase = [System.IO.Path]::GetFileNameWithoutExtension($AppExe)
 
-# 1) Czekaj az launcher calkowicie sie zamknie
+# 1) Wait for the launcher to close
 $waited = 0
 while ((Get-Process -Name $exeBase -ErrorAction SilentlyContinue) -and ($waited -lt 30)) {
     Start-Sleep -Milliseconds 500
@@ -49,7 +49,7 @@ while ((Get-Process -Name $exeBase -ErrorAction SilentlyContinue) -and ($waited 
 Start-Sleep -Seconds 1
 Log "App process closed (waited $waited s)"
 
-# 2) Skopiuj pliki aktualizacji nad instalacje (nadpisuje stare)
+# 2) Copy files
 try {
     Copy-Item -Path (Join-Path $Source "*") -Destination $Dest -Recurse -Force -ErrorAction Stop
     Log "Copy OK"
@@ -58,8 +58,7 @@ try {
     exit 1
 }
 
-# 3) Usun STARE pliki aplikacji (tylko w trybie archive),
-#    chroniac foldery z danymi uzytkownika
+# 3) delete old files
 if ($Mode -eq "archive") {
     $protectedDirs = @("games", "config", "AppData", "logs")
     Get-ChildItem -Path $Dest -Recurse -File -Force -ErrorAction SilentlyContinue | ForEach-Object {
@@ -74,13 +73,13 @@ if ($Mode -eq "archive") {
     Log "Purge of old app files done"
 }
 
-# 4) Usun folder tymczasowy aktualizacji
+# 4) Delete update temp folder
 if (Test-Path -LiteralPath $Cleanup) {
     Remove-Item -LiteralPath $Cleanup -Recurse -Force -ErrorAction SilentlyContinue
     Log "Cleanup removed"
 }
 
-# 5) Uruchom zaktualizowana aplikacje
+# 5) Launch the updated app
 $newExe = Join-Path $Dest $AppExe
 if (Test-Path -LiteralPath $newExe) {
     Start-Process -FilePath $newExe -WorkingDirectory $Dest
@@ -92,7 +91,7 @@ if (Test-Path -LiteralPath $newExe) {
 
 Log "=== Update finished OK ==="
 
-# 6) Usun ten skrypt
+# 6) Delete this script
 Remove-Item -LiteralPath $PSCommandPath -Force -ErrorAction SilentlyContinue
 exit 0
 "#;
